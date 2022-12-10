@@ -1,18 +1,62 @@
-import java.util.HashMap;
-import java.util.Map;
+package org.example;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.*;
 
 public class WeatherService {
-    Map<String,String> map = new HashMap<String, String>();
-    WeatherService()
-    {
-        map.put("Екатеринбург", "Сеичас 21.30, облачно, +1, Вероятность осадков: 19%, Влажность: 84%, Ветер: 3 м/с");
-        map.put("Астана", "Ясно +10");
-        map.put("Киев", "Дождь +6");
-        map.put("Дубай", "Ясно +26");
 
-    }
 
-    public String GetWeather(String WeatherRequest) {
-       return map.get(WeatherRequest);
+    public String getWeather(String city, String weatherToken) {
+        String url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + weatherToken + "&units=metric";
+
+        URL obj = null;
+        try {
+            obj = new URL(url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+        HttpURLConnection connection = null;
+
+        try {
+            connection = (HttpURLConnection) obj.openConnection();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            connection.setRequestMethod("GET");
+        } catch (ProtocolException e) {
+            throw new RuntimeException(e);
+        }
+
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while (true) {
+            try {
+                if (!((inputLine = in.readLine()) != null)) break;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            response.append(inputLine);
+        }
+        try {
+            in.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        response.toString();
+        int temp = response.indexOf("temp")+5;
+        return "temp: "+response.substring(temp,temp+5)+" degrees";
     }
 }
