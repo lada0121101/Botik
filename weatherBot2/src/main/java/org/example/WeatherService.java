@@ -15,11 +15,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Класс предоставления информации о погоде в городе
+ * @author Баянов Лев, Шипиловских Лада
+ */
 public class WeatherService {
+    /**
+     * токен для WeatherAPI
+     */
     String weatherToken;
     WeatherService(String weatherToken){
         this.weatherToken = weatherToken;
     }
+
+    /**
+     * возвращает информацию о погоде в заданном городе
+     * @param city название города
+     * @return информаця о погоде в городе
+     */
     public String getWeather(String city) {
         String url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + weatherToken + "&units=metric";
 
@@ -54,6 +67,11 @@ public class WeatherService {
         return parserJson(response.toString());
     }
 
+    /**
+     * формирует из json ответа сервера понятное сообщение о погоде
+     * @param textMsg json ответ на запрос серверу
+     * @return сообщение в формате City:[название города] Temperature:[температура в городе] Description:[краткое описание погоды] WindSpeed:[скорость ветра]
+     */
     private String parserJson(String textMsg) {
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(textMsg, Map.class);
