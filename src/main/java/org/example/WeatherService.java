@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
@@ -44,7 +45,9 @@ public class WeatherService {
             throw new RuntimeException(e);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
+            return "Перепроверьте название города";
+        }catch (IOException e) {
             throw new RuntimeException(e);
         }
         System.out.println(response);
@@ -52,7 +55,6 @@ public class WeatherService {
     }
 
     private String parserJson(String textMsg) {
-
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(textMsg, Map.class);
 
