@@ -1,11 +1,6 @@
 package org.example;
 
 import com.google.gson.Gson;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,7 +19,7 @@ public class WeatherService {
      * токен для WeatherAPI
      */
     String weatherToken;
-    WeatherService(String weatherToken){
+    public WeatherService(String weatherToken){
         this.weatherToken = weatherToken;
     }
 
@@ -67,7 +62,7 @@ public class WeatherService {
         return parserJson(response.toString());
     }
 
-    /**
+    /* *
      * формирует из json ответа сервера понятное сообщение о погоде
      * @param textMsg json ответ на запрос серверу
      * @return сообщение в формате City:[название города] Temperature:[температура в городе] Description:[краткое описание погоды] WindSpeed:[скорость ветра]
@@ -86,10 +81,10 @@ public class WeatherService {
 
         Map<String, Object> wind = (Map<String, Object>) map.get("wind");
         String windSpeed = "WindSpeed: " + wind.get("speed");
-                String answer = (cityName+"\n"+
+                String answer = (cityName) +"\n"+
                          temp+"\n"+
                          Description+"\n"+
-                         windSpeed+"\n");
+                         windSpeed;
 
         return answer;
     }
