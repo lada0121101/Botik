@@ -50,4 +50,7 @@ public class BotLogics {
         String cityWeather = weatherService.getWeather(textMsg);
         return cityWeather;
     }
+     public boolean isCitySet(String chatID, String city){
+        return citys.containsKey(chatID) && citys.get(chatID).equals(city);
+     }
 }
