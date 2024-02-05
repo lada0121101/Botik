@@ -47,4 +47,61 @@ public class BotTest {
         matcher.find();
         Assertions.assertEquals(matcher. group(1), city);
     }
+
+    @Test
+    public void SetCommandSetsCityTest(){
+        Properties prop = new Properties();
+        String weatherToken;
+        try {
+            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
+        WeatherService service = new WeatherService(weatherToken);
+        BotLogics logic = new BotLogics(service);
+        String response =logic.botResponse("set Moscow", "01");
+        Assertions.assertTrue(logic.isCitySet("01", "Moscow")&&response. equals("Ваш город проживания - Moscow") );
+    }
+
+    @Test
+    public void CurrentCommandGetCurrentCityWeatherTest(){
+        Properties prop = new Properties();
+        String weatherToken;
+        try {
+            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
+        WeatherService service = new WeatherService(weatherToken);
+        BotLogics logic = new BotLogics(service);
+        logic.botResponse("set Moscow", "01");
+        String response =logic.botResponse("current", "01");
+        String strPattern = "City: (.+)\n";
+        Pattern pattern =Pattern.compile(strPattern);
+        Matcher matcher = pattern.matcher(response);
+        matcher.lookingAt();
+        String city = matcher.group(1);
+        Assertions.assertEquals(city, "Moscow" );
+    }
+
+    @Test
+    public void UnkonownCityMessageTest(){
+        Properties prop = new Properties();
+        String weatherToken;
+        try {
+            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
+        WeatherService service = new WeatherService(weatherToken);
+        BotLogics logic = new BotLogics(service);
+        String response =logic.botResponse("current", "01");
+        Assertions.assertEquals(response, "Сначала задайте текущий город");
+    }
 }
