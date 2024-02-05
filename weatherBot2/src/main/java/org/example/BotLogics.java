@@ -1,5 +1,7 @@
 package org.example;
-
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *Класс логики бота, обрабатывает сообщение пользователя и возвращает ответ бота;
@@ -10,7 +12,7 @@ public class BotLogics {
      * сервис для получения инфрмации о погоде в городе
      */
     WeatherService weatherService;
-
+    HashMap<String, String> citys = new HashMap<>();
     public BotLogics(WeatherService weatherService) {
         this.weatherService = weatherService;
     }
@@ -28,6 +30,23 @@ public class BotLogics {
             return start;
         else if (textMsg .equals("/help"))
             return help;
+        else if (textMsg.contains("set"))
+        {
+            String setPattern = "set\\s(.+)";
+            Pattern pattern = Pattern.compile(setPattern);
+            Matcher matcher =pattern.matcher(textMsg);
+            matcher.lookingAt();
+            citys.put(chatId, matcher. group(1));
+            return "Ваш город проживания - "+ matcher.group(1);
+        }
+        else if(textMsg.equals("current")){
+            if(citys.containsKey(chatId)){
+                String currentCity = citys.get(chatId);
+                String currentCityWeather = weatherService.getWeather(currentCity);
+                return currentCityWeather;
+            }
+            else return "Сначала задайте текущий город";
+        }
         String cityWeather = weatherService.getWeather(textMsg);
         return cityWeather;
     }
