@@ -7,7 +7,14 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Класс с точкой входа
+ * @author Лев Баянов
+ */
 public class Main {
+    /**
+     *Точка входа в программу, создание экземпляров классов;
+     */
     public static void main(String[] args) {
         Properties prop = new Properties();
         String BOT_TOKEN = "";

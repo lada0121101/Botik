@@ -6,28 +6,52 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+/**
+ * Класс Telgram бота, описывает реакцию на обновление, хранит имя бота, токен, связывает логику бота с самим ботом;
+ * @author Лев Баянов
+ */
 public class WeatherTelegramBot extends TelegramLongPollingBot {
-
+    /**
+     *токен бота(уникальная строка, нужная для управления ботом)
+     */
     String BOT_TOKEN;
+    /**
+     * название бота
+     */
     String BOT_NAME;
+    /**
+     * логика бота, описывающая способ обработки собщения пользоваетелей
+     */
     BotLogics botLogics;
     WeatherTelegramBot(BotLogics botLogics, String BOT_TOKEN, String BOT_NAME)
     {
         this.botLogics = botLogics;
         this.BOT_TOKEN = BOT_TOKEN;
         this.BOT_NAME = BOT_NAME;
-
     }
+
+    /**
+     *
+     * @return Имя бота
+     */
     @Override
     public String getBotUsername() {
         return BOT_NAME;
     }
 
+    /**
+     *
+     * @return токен бота
+     */
     @Override
     public String getBotToken() {
         return BOT_TOKEN;
     }
 
+    /**
+     * ипользуя логику бота отвечает пользователю
+     * @param update информация об обновлени состояния одной из бесед бота
+     */
     @Override
     public void onUpdateReceived(Update update) {
         Message inMess = update.getMessage();

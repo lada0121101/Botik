@@ -1,12 +1,8 @@
 package org.example;
 
 import com.google.gson.Gson;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
@@ -14,11 +10,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Класс предоставления информации о погоде в городе
+ * @author Баянов Лев, Шипиловских Лада
+ */
 public class WeatherService {
+    /**
+     * токен для WeatherAPI
+     */
     String weatherToken;
-    WeatherService(String weatherToken){
+    public WeatherService(String weatherToken){
         this.weatherToken = weatherToken;
     }
+
+    /**
+     * возвращает информацию о погоде в заданном городе
+     * @param city название города
+     * @return информаця о погоде в городе
+     */
     public String getWeather(String city) {
         String url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + weatherToken + "&units=metric";
 
@@ -44,15 +53,21 @@ public class WeatherService {
             throw new RuntimeException(e);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
+            return "Перепроверьте название города";
+        }catch (IOException e) {
             throw new RuntimeException(e);
         }
         System.out.println(response);
         return parserJson(response.toString());
     }
 
+    /* *
+     * формирует из json ответа сервера понятное сообщение о погоде
+     * @param textMsg json ответ на запрос серверу
+     * @return сообщение в формате City:[название города] Temperature:[температура в городе] Description:[краткое описание погоды] WindSpeed:[скорость ветра]
+     */
     private String parserJson(String textMsg) {
-
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(textMsg, Map.class);
 
@@ -66,10 +81,10 @@ public class WeatherService {
 
         Map<String, Object> wind = (Map<String, Object>) map.get("wind");
         String windSpeed = "WindSpeed: " + wind.get("speed");
-                String answer = (cityName+"\n"+
+                String answer = (cityName) +"\n"+
                          temp+"\n"+
                          Description+"\n"+
-                         windSpeed+"\n");
+                         windSpeed;
 
         return answer;
     }
