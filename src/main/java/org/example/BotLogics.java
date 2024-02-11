@@ -12,6 +12,9 @@ public class BotLogics {
      * сервис для получения инфрмации о погоде в городе
      */
     WeatherService weatherService;
+    /**
+     * хранилище городов ползователей.Ключ -Id, значение - текущий город
+     */
     HashMap<String, String> citys = new HashMap<>();
     public BotLogics(WeatherService weatherService) {
         this.weatherService = weatherService;
@@ -50,6 +53,12 @@ public class BotLogics {
         String cityWeather = weatherService.getWeather(textMsg);
         return cityWeather;
     }
+
+    /**
+     * @param chatID-id города
+     * @param city-название города
+     * @return есть ли запись с id и city в словаре citys
+     */
      public boolean isCitySet(String chatID, String city){
         return citys.containsKey(chatID) && citys.get(chatID).equals(city);
      }
