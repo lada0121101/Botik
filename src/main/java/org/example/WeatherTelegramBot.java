@@ -72,6 +72,10 @@ public class WeatherTelegramBot extends TelegramLongPollingBot implements Runnab
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * рассылает информацию о погоде всем подписанным на текущее время
+     */
     @Override
     public void run(){
         LocalTime currentTime =LocalTime.now();

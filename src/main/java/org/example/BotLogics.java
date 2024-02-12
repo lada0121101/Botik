@@ -19,6 +19,9 @@ public class BotLogics {
      * хранилище городов ползователей.Ключ -Id, значение - текущий город
      */
     HashMap<String, String> citys = new HashMap<>();
+    /**
+     * Хранилище времени рассылки. Первый индекс -час , второй-минута, множество- множество chatId, подписанных на получившееся время
+     */
     HashSet<String>[][] mailingStorage= new HashSet[24][60];
 
     public BotLogics(WeatherService weatherService) {
@@ -99,6 +102,14 @@ public class BotLogics {
      public HashSet<String> getChatIdsByTime(LocalTime time){
          return mailingStorage[time.getHour()][time.getMinute()];
      }
+
+    /**
+     *
+     * @param chatID
+     * @param hour
+     * @param minut
+     * @return сохранëн ли chatID на данное время рассылки.
+     */
 
      public boolean IsTimeSet(String chatID, int hour, int minut){
          return mailingStorage[hour][minut].contains(chatID);
