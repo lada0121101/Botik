@@ -6,6 +6,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Класс с точкой входа
@@ -38,5 +41,7 @@ public class Main {
         }catch (TelegramApiException e) {
            throw new RuntimeException(e);
         }
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(weatherTelegramBot,0 ,1, TimeUnit.MINUTES);
     }
 }
