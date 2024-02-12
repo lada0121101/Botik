@@ -120,4 +120,64 @@ public class BotTest {
         String response =logic.botResponse("set "+city, "01");
         Assertions.assertTrue(logic.isCitySet("01", city) &&response.equals("Ваш город проживания - "+city));
     }
+
+    @Test
+    public void ScheduleTimeSetTest(){
+        Properties prop = new Properties();
+        String weatherToken;
+        try {
+            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
+        WeatherService service = new WeatherService(weatherToken);
+        BotLogics logic = new BotLogics(service);
+        logic.botResponse("set Moscow", "01");
+        logic.botResponse("/schedule 14:30", "01");
+        Assertions.assertTrue(logic.IsTimeSet("01", 14, 30));
+    }
+
+    @Test
+    public void UnscheduleCommandStopsMailing(){
+        Properties prop = new Properties();
+        String weatherToken;
+        try {
+            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
+        WeatherService service = new WeatherService(weatherToken);
+        BotLogics logic = new BotLogics(service);
+        logic.botResponse("set Moscow", "01");
+        logic.botResponse("/schedule 14:30", "01");
+        logic.botResponse("/schedule 19:08", "01");
+        logic.botResponse("/schedule 18:02", "01");
+        logic.botResponse("/unschedule", "01");
+        for(int i=0;i<24;i++){
+            for(int j=0;j<60;j++){
+                Assertions.assertFalse(logic.IsTimeSet("01", i, j));
+            }
+        }
+    }
+
+    @Test
+    public void CanNotScheduleIfCityIsNotSet(){
+        Properties prop = new Properties();
+        String weatherToken;
+        try {
+            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
+        WeatherService service = new WeatherService(weatherToken);
+        BotLogics logic = new BotLogics(service);
+        String responce = logic.botResponse("/schedule 14:30" , "01");
+        Assertions.assertEquals(responce, "Сначала задайте текущий город");
+    }
 }

@@ -100,5 +100,8 @@ public class BotLogics {
          return mailingStorage[time.getHour()][time.getMinute()];
      }
 
+     public boolean IsTimeSet(String chatID, int hour, int minut){
+         return mailingStorage[hour][minut].contains(chatID);
+     }
 
 }
