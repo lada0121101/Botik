@@ -14,21 +14,13 @@ import java.util.regex.*;
  */
 public class BotTest {
     /**
-     * тес на соответствие обычного ответа шаблону
+     * тест на соответствие обычного ответа шаблону
      */
+    final String  WEATHER_TOKEN = "b0a7d4ef65455317ec52fe386eb9140d";
+    WeatherService service = new WeatherService(WEATHER_TOKEN);
+    BotLogics logic = new BotLogics(service);
     @Test
     public void AnswerPatternTest(){
-        Properties prop = new Properties();
-        String weatherToken;
-        try {
-            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
-        WeatherService service = new WeatherService(weatherToken);
-        BotLogics logic = new BotLogics(service);
         String answerPattern = "City: .*?\nTemperature: -?\\d+\\.\\d+\nDescription: \\w+(\\s\\w+)?\nWindSpeed: \\d+\\.\\d+";
         Assertions.assertTrue(Pattern.matches(answerPattern, logic.botResponse("London", "01")));
     }
@@ -40,17 +32,6 @@ public class BotTest {
     @ParameterizedTest
     @ValueSource(strings = {"Moscow", "Paris", "London", "Rome"})
     public void CityWeatherTest(String city){
-        Properties prop = new Properties();
-        String weatherToken;
-        try {
-            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
-        WeatherService service = new WeatherService(weatherToken);
-        BotLogics logic = new BotLogics(service);
         String regex = "City: (.*)\n";
         Pattern pattern = Pattern.compile(regex);
         Matcher  matcher = pattern.matcher(logic.botResponse(city, "01"));
@@ -63,17 +44,6 @@ public class BotTest {
      */
     @Test
     public void SetCommandSetsCityTest(){
-        Properties prop = new Properties();
-        String weatherToken;
-        try {
-            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
-        WeatherService service = new WeatherService(weatherToken);
-        BotLogics logic = new BotLogics(service);
         String response =logic.botResponse("set Moscow", "01");
         Assertions.assertTrue(logic.isCitySet("01", "Moscow")&&response. equals("Ваш город проживания - Moscow") );
     }
@@ -82,18 +52,7 @@ public class BotTest {
      * тест команды current, возвращающий погоду в текущем городе
      */
     @Test
-    public void CurrentCommandGetCurrentCityWeatherTest(){
-        Properties prop = new Properties();
-        String weatherToken;
-        try {
-            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
-        WeatherService service = new WeatherService(weatherToken);
-        BotLogics logic = new BotLogics(service);
+    public void CurrentCommandGetCurrentCityWeatherTest(){;
         logic.botResponse("set Moscow", "01");
         String response =logic.botResponse("current", "01");
         String strPattern = "City: (.+)\n";
@@ -109,17 +68,6 @@ public class BotTest {
      */
     @Test
     public void UnkonownCityMessageTest(){
-        Properties prop = new Properties();
-        String weatherToken;
-        try {
-            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
-        WeatherService service = new WeatherService(weatherToken);
-        BotLogics logic = new BotLogics(service);
         String response =logic.botResponse("current", "01");
         Assertions.assertEquals(response, "Сначала задайте текущий город");
     }
@@ -131,17 +79,7 @@ public class BotTest {
     @ParameterizedTest
     @ValueSource(strings = {"Moscow", "Paris", "London", "Rome"})
     public void ResetCityTest(String city){
-        Properties prop = new Properties();
-        String weatherToken;
-        try {
-            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
-        WeatherService service = new WeatherService(weatherToken);
-        BotLogics logic = new BotLogics(service);
+
         String response =logic.botResponse("set "+city, "01");
         Assertions.assertTrue(logic.isCitySet("01", city) &&response.equals("Ваш город проживания - "+city));
     }
@@ -151,17 +89,6 @@ public class BotTest {
      */
     @Test
     public void ScheduleTimeSetTest(){
-        Properties prop = new Properties();
-        String weatherToken;
-        try {
-            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
-        WeatherService service = new WeatherService(weatherToken);
-        BotLogics logic = new BotLogics(service);
         logic.botResponse("set Moscow", "01");
         logic.botResponse("/schedule 14:30", "01");
         Assertions.assertTrue(logic.IsTimeSet("01", 14, 30));
@@ -172,17 +99,6 @@ public class BotTest {
      */
     @Test
     public void UnscheduleCommandStopsMailing(){
-        Properties prop = new Properties();
-        String weatherToken;
-        try {
-            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
-        WeatherService service = new WeatherService(weatherToken);
-        BotLogics logic = new BotLogics(service);
         logic.botResponse("set Moscow", "01");
         logic.botResponse("/schedule 14:30", "01");
         logic.botResponse("/schedule 19:08", "01");
@@ -200,17 +116,6 @@ public class BotTest {
      */
     @Test
     public void CanNotScheduleIfCityIsNotSet(){
-        Properties prop = new Properties();
-        String weatherToken;
-        try {
-            prop.load(XmlRootObjectJaxbProvider.App.class.getClassLoader().getResourceAsStream("config.properties"));
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        weatherToken = prop.getProperty("WEATHER_SERVICE_TOKEN");
-        WeatherService service = new WeatherService(weatherToken);
-        BotLogics logic = new BotLogics(service);
         String responce = logic.botResponse("/schedule 14:30" , "01");
         Assertions.assertEquals(responce, "Сначала задайте текущий город");
     }
