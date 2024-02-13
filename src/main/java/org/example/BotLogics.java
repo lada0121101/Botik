@@ -85,6 +85,7 @@ public class BotLogics {
                     }
                 }
             }
+            return "The mailing is stoped";
         }
         String cityWeather = weatherService.getWeather(textMsg);
         return cityWeather;
