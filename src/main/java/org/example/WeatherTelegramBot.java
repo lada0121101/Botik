@@ -6,11 +6,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.time.LocalTime;
+
 /**
  * Класс Telgram бота, описывает реакцию на обновление, хранит имя бота, токен, связывает логику бота с самим ботом;
  * @author Лев Баянов
  */
-public class WeatherTelegramBot extends TelegramLongPollingBot {
+public class WeatherTelegramBot extends TelegramLongPollingBot implements Runnable{
     /**
      *токен бота(уникальная строка, нужная для управления ботом)
      */
@@ -68,6 +70,26 @@ public class WeatherTelegramBot extends TelegramLongPollingBot {
             execute(outMess);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * рассылает информацию о погоде всем подписанным на текущее время
+     */
+    @Override
+    public void run(){
+        LocalTime currentTime =LocalTime.now();
+        for (var chatId : botLogics.getChatIdsByTime(currentTime)){
+            String userCurrentCityWeather= botLogics.botResponse("current", chatId);
+            SendMessage answer=new SendMessage();
+            answer.setChatId(chatId);
+            answer.setText(userCurrentCityWeather);
+            try{
+                execute(answer);
+            }
+            catch (TelegramApiException e){
+                throw new RuntimeException(e);
+            }
         }
     }
 }

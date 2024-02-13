@@ -1,5 +1,8 @@
 package org.example;
+import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,8 +19,18 @@ public class BotLogics {
      * хранилище городов ползователей.Ключ -Id, значение - текущий город
      */
     HashMap<String, String> citys = new HashMap<>();
+    /**
+     * Хранилище времени рассылки. Первый индекс -час , второй-минута, множество- множество chatId, подписанных на получившееся время
+     */
+    HashSet<String>[][] mailingStorage= new HashSet[24][60];
+
     public BotLogics(WeatherService weatherService) {
         this.weatherService = weatherService;
+        for (int i =0;i<24;i++){
+            for(int j=0;j<60;j++){
+                mailingStorage[i][j]=new HashSet<String>();
+            }
+        }
     }
 
     /**
@@ -50,6 +63,30 @@ public class BotLogics {
             }
             else return "Сначала задайте текущий город";
         }
+        else if(textMsg.startsWith("/schedule")){
+            if(citys.containsKey(chatId)) {
+                String schedulePattern = "/schedule\\s(\\d{2}):(\\d{2})";
+                Pattern pattern = Pattern.compile(schedulePattern);
+                Matcher matcher = pattern.matcher(textMsg);
+                matcher.find();
+                String hours = matcher.group(1);
+                String minuts = matcher.group(2);
+                mailingStorage[Integer.parseInt(hours)][Integer.parseInt(minuts)].add(chatId);
+                String answer = "We will send you information about city every day at " + hours + ":" + minuts + ". To stop mailing write /unschedule to the bot.";
+                return answer;
+            }
+            else return "Сначала задайте текущий город";
+        }
+        else if (textMsg. startsWith("/unschedule")) {
+            for (int i = 0; i < 24; i++){
+                for (int j = 0;j <60;j++){
+                    if(mailingStorage[i][j].contains(chatId)){
+                        mailingStorage[i][j].remove(chatId);
+                    }
+                }
+            }
+            return "The mailing is stoped";
+        }
         String cityWeather = weatherService.getWeather(textMsg);
         return cityWeather;
     }
@@ -62,4 +99,21 @@ public class BotLogics {
      public boolean isCitySet(String chatID, String city){
         return citys.containsKey(chatID) && citys.get(chatID).equals(city);
      }
+
+     public HashSet<String> getChatIdsByTime(LocalTime time){
+         return mailingStorage[time.getHour()][time.getMinute()];
+     }
+
+    /**
+     *
+     * @param chatID
+     * @param hour
+     * @param minut
+     * @return сохранëн ли chatID на данное время рассылки.
+     */
+
+     public boolean IsTimeSet(String chatID, int hour, int minut){
+         return mailingStorage[hour][minut].contains(chatID);
+     }
+
 }
